@@ -240,8 +240,58 @@
 
 
 
+// import React, { useState, useContext } from 'react';
+// import { Container, Typography, TextField, Button, Box } from '@mui/material';
+// import API from '../services/api';
+// import { AuthContext } from '../contexts/AuthContext';
+// import { useNotification } from '../components/Notification';
+
+// const SignupPage = () => {
+//   const { login } = useContext(AuthContext);
+//   const { addNotification } = useNotification();
+//   const [form, setForm] = useState({ name: '', email: '', password: '', studentId: '', mobile: '' });
+//   const [loading, setLoading] = useState(false);
+
+//   const submit = async () => {
+//     setLoading(true);
+//     try {
+//       const res = await API.post('/auth/signup', form);
+//       const { token, user } = res.data;
+//       login(token, user);
+//       addNotification({ message: 'Account created', type: 'success' });
+//     } catch (err) {
+//       const msg = err.response?.data?.message || 'Signup failed';
+//       addNotification({ message: msg, type: 'error' });
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   return (
+//     <Container maxWidth="xs" style={{ marginTop: 100 }}>
+//       <Box textAlign="center">
+//         <Typography variant="h4" gutterBottom>রেজিস্টার</Typography>
+//         <TextField label="Name" fullWidth margin="normal" value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} />
+//         <TextField label="Student ID" fullWidth margin="normal" value={form.studentId} onChange={(e) => setForm({...form, studentId: e.target.value})} />
+//         <TextField label="Mobile" fullWidth margin="normal" value={form.mobile} onChange={(e) => setForm({...form, mobile: e.target.value})} />
+//         <TextField label="Email" fullWidth margin="normal" value={form.email} onChange={(e) => setForm({...form, email: e.target.value})} />
+//         <TextField label="Password" type="password" fullWidth margin="normal" value={form.password} onChange={(e) => setForm({...form, password: e.target.value})} />
+//         <Button variant="contained" color="primary" fullWidth onClick={submit} disabled={loading} style={{ marginTop: 16 }}>
+//           {loading ? 'Creating...' : 'রেজিস্টার'}
+//         </Button>
+//       </Box>
+//     </Container>
+//   );
+// };
+
+// export default SignupPage;
+
+
+
 import React, { useState, useContext } from 'react';
-import { Container, Typography, TextField, Button, Box } from '@mui/material';
+import { Container, Typography, TextField, Button, Box, InputAdornment, IconButton } from '@mui/material';
+import { Visibility, VisibilityOff, Person, Phone, Mail } from '@mui/icons-material';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import API from '../services/api';
 import { AuthContext } from '../contexts/AuthContext';
 import { useNotification } from '../components/Notification';
@@ -249,36 +299,185 @@ import { useNotification } from '../components/Notification';
 const SignupPage = () => {
   const { login } = useContext(AuthContext);
   const { addNotification } = useNotification();
-  const [form, setForm] = useState({ name: '', email: '', password: '', studentId: '', mobile: '' });
-  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const submit = async () => {
-    setLoading(true);
+  const [form, setForm] = useState({
+    name: '',
+    studentId: '',
+    mobile: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  const update = (key, value) => setForm((f) => ({ ...f, [key]: value }));
+
+  const validate = () => {
+    if (!form.name.trim()) return 'Please enter your name';
+    if (!form.studentId.trim()) return 'Please enter your Student ID';
+    if (!form.email.trim()) return 'Please enter your email';
+    if (!/\S+@\S+\.\S+/.test(form.email)) return 'Please enter a valid email';
+    if (!form.password || form.password.length < 8) return 'Password must be at least 8 characters';
+    if (form.password !== form.confirmPassword) return 'Passwords do not match';
+    return null;
+  };
+
+  const handleSubmit = async () => {
+    const err = validate();
+    if (err) {
+      addNotification({ message: err, type: 'error' });
+      return;
+    }
+
+    setSubmitting(true);
     try {
-      const res = await API.post('/auth/signup', form);
+      const res = await API.post('/auth/signup', {
+        name: form.name,
+        studentId: form.studentId,
+        mobile: form.mobile,
+        email: form.email,
+        password: form.password,
+      });
+
       const { token, user } = res.data;
-      login(token, user);
-      addNotification({ message: 'Account created', type: 'success' });
-    } catch (err) {
-      const msg = err.response?.data?.message || 'Signup failed';
+      if (token && user) {
+        login(token, user);
+        addNotification({ message: 'Account created — logged in', type: 'success' });
+        navigate('/dining'); // redirect after signup (adjust as desired)
+      } else {
+        addNotification({ message: 'Signup succeeded but no token returned', type: 'info' });
+      }
+    } catch (e) {
+      const msg = e.response?.data?.message || 'Signup failed';
       addNotification({ message: msg, type: 'error' });
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
 
   return (
-    <Container maxWidth="xs" style={{ marginTop: 100 }}>
-      <Box textAlign="center">
-        <Typography variant="h4" gutterBottom>রেজিস্টার</Typography>
-        <TextField label="Name" fullWidth margin="normal" value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} />
-        <TextField label="Student ID" fullWidth margin="normal" value={form.studentId} onChange={(e) => setForm({...form, studentId: e.target.value})} />
-        <TextField label="Mobile" fullWidth margin="normal" value={form.mobile} onChange={(e) => setForm({...form, mobile: e.target.value})} />
-        <TextField label="Email" fullWidth margin="normal" value={form.email} onChange={(e) => setForm({...form, email: e.target.value})} />
-        <TextField label="Password" type="password" fullWidth margin="normal" value={form.password} onChange={(e) => setForm({...form, password: e.target.value})} />
-        <Button variant="contained" color="primary" fullWidth onClick={submit} disabled={loading} style={{ marginTop: 16 }}>
-          {loading ? 'Creating...' : 'রেজিস্টার'}
+    <Container maxWidth="xs" sx={{ mt: 10 }}>
+      <Box
+        sx={{
+          bgcolor: 'background.paper',
+          p: 4,
+          borderRadius: 2,
+          boxShadow: 3,
+          textAlign: 'center',
+        }}
+      >
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="h5" component="h1" gutterBottom>
+            Create Account
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Sign up with your student details to collect dining tokens.
+          </Typography>
+        </Box>
+
+        <TextField
+          label="Full Name"
+          fullWidth
+          margin="normal"
+          value={form.name}
+          onChange={(e) => update('name', e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Person />
+              </InputAdornment>
+            ),
+          }}
+        />
+
+        <TextField
+          label="Student ID"
+          fullWidth
+          margin="normal"
+          value={form.studentId}
+          onChange={(e) => update('studentId', e.target.value)}
+        />
+
+        <TextField
+          label="Mobile"
+          fullWidth
+          margin="normal"
+          value={form.mobile}
+          onChange={(e) => update('mobile', e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Phone />
+              </InputAdornment>
+            ),
+          }}
+        />
+
+        <TextField
+          label="Email"
+          type="email"
+          fullWidth
+          margin="normal"
+          value={form.email}
+          onChange={(e) => update('email', e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Mail />
+              </InputAdornment>
+            ),
+          }}
+        />
+
+        <TextField
+          label="Password"
+          type={showPassword ? 'text' : 'password'}
+          fullWidth
+          margin="normal"
+          value={form.password}
+          onChange={(e) => update('password', e.target.value)}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={() => setShowPassword((s) => !s)} edge="end" aria-label="toggle password">
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+          helperText="Minimum 8 characters"
+        />
+
+        <TextField
+          label="Confirm Password"
+          type={showPassword ? 'text' : 'password'}
+          fullWidth
+          margin="normal"
+          value={form.confirmPassword}
+          onChange={(e) => update('confirmPassword', e.target.value)}
+        />
+
+        <Button
+          variant="contained"
+          color="primary"
+          fullWidth
+          sx={{ mt: 2 }}
+          onClick={handleSubmit}
+          disabled={submitting}
+        >
+          {submitting ? 'Creating...' : 'Create Account'}
         </Button>
+
+        <Box sx={{ mt: 2 }}>
+          <Typography variant="body2">
+            Already have an account?{' '}
+            <Button component={RouterLink} to="/login" variant="text" size="small">
+              Sign in
+            </Button>
+          </Typography>
+        </Box>
       </Box>
     </Container>
   );

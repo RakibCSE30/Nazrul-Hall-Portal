@@ -1,18 +1,40 @@
+// src/components/Footer.jsx
 import React from 'react';
-import { Box, Container, Typography, Grid, Link } from '@mui/material';
+import {
+  Box,
+  Container,
+  Typography,
+  Grid,
+  Link,
+  IconButton,
+  Divider,
+} from '@mui/material';
+import {
+  Facebook,
+  Instagram,
+  Twitter,
+  YouTube,
+  School,
+} from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 
 const Footer = () => {
   const theme = useTheme();
   const mode = theme.palette.mode;
 
-  // Background gradient based on mode
   const bg =
     mode === 'dark'
-      ? 'linear-gradient(90deg, rgba(20,20,20,1) 0%, rgba(35,35,35,1) 100%)'
-      : 'linear-gradient(90deg, #124261 0%, #2A628F 100%)'; // changed to match navbar gradient
+      ? 'linear-gradient(90deg, #0d1b2a, #1b263b)'
+      : 'linear-gradient(90deg, #124261, #2A628F)';
 
-  const textColor = mode === 'dark' ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.9)';
+  const textColor = 'rgba(255,255,255,0.92)';
+
+  const socialLinks = [
+    { icon: <Facebook />, href: 'https://facebook.com/nazrulhall' },
+    { icon: <Instagram />, href: 'https://instagram.com/nazrulhall' },
+    { icon: <Twitter />, href: 'https://twitter.com/nazrulhall' },
+    { icon: <YouTube />, href: 'https://youtube.com/nazrulhall' },
+  ];
 
   return (
     <Box
@@ -20,66 +42,112 @@ const Footer = () => {
       sx={{
         background: bg,
         color: textColor,
-        py: 5,
-        mt: 6,
-        borderTop: 1,
-        borderColor: mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.1)',
+        py: { xs: 5, md: 7 },
+        mt: 8,
       }}
     >
       <Container maxWidth="lg">
         <Grid container spacing={4}>
-          {/* Column 1: About */}
+          {/* ---- About ---- */}
           <Grid item xs={12} md={4}>
-            <Typography variant="h6" sx={{ fontWeight: 700 }}>
+            <Typography
+              variant="h6"
+              sx={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: 1 }}
+            >
+              <School fontSize="large" />
               Nazrul Hall
             </Typography>
-            <Typography variant="body2" sx={{ mt: 1, opacity: 0.8 }}>
-              JKKNIU — Nazrul Hall portal for digital hall management, dining, and student services.
+            <Typography variant="body2" sx={{ mt: 1.5, opacity: 0.85 }}>
+              JKKNIU — A digital portal for hall management, dining tokens,
+              student services and community engagement.
             </Typography>
           </Grid>
 
-          {/* Column 2: Quick Links */}
+          {/* ---- Quick Links ---- */}
           <Grid item xs={12} md={4}>
             <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
               Quick Links
             </Typography>
-            <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-              <Link href="/" underline="hover" color="inherit">Home</Link>
-              <Link href="/students" underline="hover" color="inherit">Students</Link>
-              <Link href="/dining" underline="hover" color="inherit">Dining</Link>
-              <Link href="/staffs" underline="hover" color="inherit">Staff</Link>
-              <Link href="/gallery" underline="hover" color="inherit">Gallery</Link>
+            <Box sx={{ mt: 1.5, display: 'flex', flexDirection: 'column', gap: 0.8 }}>
+              {[
+                { label: 'Home', to: '/' },
+                { label: 'Students', to: '/students' },
+                { label: 'Dining', to: '/dining' },
+                { label: 'Staff', to: '/staffs' },
+                { label: 'Gallery', to: '/gallery' },
+                { label: 'Hall Shangsod', to: '/hall-shangsod' },
+              ].map(l => (
+                <Link
+                  key={l.to}
+                  href={l.to}
+                  underline="hover"
+                  color="inherit"
+                  sx={{ opacity: 0.9, '&:hover': { opacity: 1 } }}
+                >
+                  {l.label}
+                </Link>
+              ))}
             </Box>
           </Grid>
 
-          {/* Column 3: Contact */}
+          {/* ---- Contact & Social ---- */}
           <Grid item xs={12} md={4}>
             <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-              Contact
+              Contact Us
             </Typography>
-            <Typography variant="body2" sx={{ mt: 1, opacity: 0.9 }}>
-              Office: +88 0171-0000000 <br />
+            <Typography variant="body2" sx={{ mt: 1.5, opacity: 0.9 }}>
+              Office: +88 0171-0000000
+              <br />
               Email: office@jkkniu.edu.bd
             </Typography>
+
+            <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
+              {socialLinks.map((s, i) => (
+                <IconButton
+                  key={i}
+                  component="a"
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener"
+                  sx={{
+                    color: 'rgba(255,255,255,0.85)',
+                    '&:hover': { color: '#fdd835' },
+                  }}
+                >
+                  {s.icon}
+                </IconButton>
+              ))}
+            </Box>
           </Grid>
         </Grid>
 
-        {/* Bottom Gradient Text */}
-        <Box sx={{ mt: 4, textAlign: 'center' }}>
+        <Divider sx={{ my: 3, borderColor: 'rgba(255,255,255,0.12)' }} />
+
+        {/* ---- Copyright ---- */}
+        <Box sx={{ textAlign: 'center' }}>
           <Typography
             variant="caption"
             sx={{
-              background: 'linear-gradient(90deg, #f0c93d, #2A628F)',
+              background: 'linear-gradient(90deg, #fdd835, #2A628F)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
-              fontWeight: 'bold',
-              letterSpacing: 0.5,
+              fontWeight: 600,
+              letterSpacing: 0.8,
+              animation: 'pulse 3s infinite',
             }}
           >
-            © {new Date().getFullYear()} Nazrul Hall — All rights reserved.
+            © {new Date().getFullYear()} Nazrul Hall — All Rights Reserved.
           </Typography>
         </Box>
       </Container>
+
+      {/* tiny pulse animation */}
+      <style jsx>{`
+        @keyframes pulse {
+          0%, 100% { opacity: 0.9; }
+          50% { opacity: 1; }
+        }
+      `}</style>
     </Box>
   );
 };

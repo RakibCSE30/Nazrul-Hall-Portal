@@ -1,15 +1,18 @@
 // simple data file for teachers; replace with API calls when backend ready
+import Razzak_sir from './SirPic/Razzak_sir.jpg'
+import Uzzal_sir from './SirPic/Uzzal_sir.jpg'
 const TEACHERS = [
   {
     id: 'provost-1',
     group: 'provost',
     title: 'Provost',
-    name: 'Prof. Dr. A. B. Provost',
+    name: 'Prof. Dr. Mohammad Abdur Razzak ',
     position: 'Provost, Nazrul Hall',
     email: 'provost@jkkniu.edu.bd',
     phone: '01710000001',
     bio: 'Experienced academic and head of Nazrul Hall.',
-    photo: 'https://i.pravatar.cc/200?img=12'
+    photo: Razzak_sir,
+    url: "https://juniv.edu/teachers/arazzak"
   },
   {
     id: 'past-provost-1',
@@ -26,12 +29,14 @@ const TEACHERS = [
     id: 'warden-1',
     group: 'warden',
     title: 'Warden',
-    name: 'Dr. E. F. Warden',
+    name: 'Uzzwal Kumar Mondal',
+
     position: 'Warden',
     email: 'warden@jkkniu.edu.bd',
     phone: '01710000003',
     bio: 'Warden responsible for discipline and student welfare.',
-    photo: 'https://i.pravatar.cc/200?img=14'
+    photo: Uzzal_sir,
+    url: "https://juniv.edu/teachers/umondal"
   },
   {
     id: 'teacher-1',

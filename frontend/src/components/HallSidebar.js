@@ -1,21 +1,12 @@
+// src/components/HallSidebar.js
 import React from 'react';
 import { Box, List, ListItemButton, ListItemAvatar, Avatar, ListItemText, Typography, Divider } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
-/**
- * HallSidebar
- * Props:
- * - members: array of member objects
- * - selectedId: currently selected member id
- * - onSelect: optional callback (will also navigate)
- *
- * This sidebar is intended to sit on the LEFT (desktop) and open from left on mobile.
- */
 const HallSidebar = ({ members = [], selectedId, onSelect }) => {
   const navigate = useNavigate();
 
   const handleClick = (m) => {
-    // navigate to left-side member-specific route
     navigate(`/hall-shangsod/${m.id}`);
     if (onSelect) onSelect(m);
   };

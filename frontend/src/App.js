@@ -84,9 +84,6 @@
 
 // export default App;
 
-
-
-
 // import React, { useState } from 'react';
 // import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 // import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
@@ -134,59 +131,108 @@
 
 // export default App;
 
+// import React, { useState } from 'react';
+// import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+// import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
+// import Navbar from './components/Navbar';
+// import Home from './pages/Home';
+// import Students from './pages/Students';
+// import DiningTokenSystem from './DiningTokenSystem';  // ← FIXED
+// import Gallery from './pages/Gallery';
+// import Login from './pages/Login';
+// import './App.css';
+// import Notification from './components/Notification'; // <- added
 
+// function App() {
+//   const [darkMode, setDarkMode] = useState(false);
 
+//   const theme = createTheme({
+//     palette: {
+//       mode: darkMode ? 'dark' : 'light',
+//       primary: { main: darkMode ? '#2e7d32' : '#388e3c' },
+//       secondary: { main: '#fdd835' },
+//       background: {
+//         default: darkMode ? '#121212' : '#f5f5f5',
+//         paper: darkMode ? '#1e1e1e' : '#ffffff',
+//       },
+//     },
+//   });
 
+//   return (
+//     <ThemeProvider theme={theme}>
+//       <CssBaseline />
+//       {/* Wrap app with Notification provider. offsetTop should match navbar height (70px used here). */}
+//       <Notification offsetTop="70px">
+//         <Router>
+//           <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
+//           <div style={{ paddingTop: '70px' }}>
+//             <Routes>
+//               <Route path="/" element={<Home />} />
+//               <Route path="/students" element={<Students />} />
+//               <Route path="/dining" element={<DiningTokenSystem />} />  {/* ← Use correct name */}
+//               <Route path="/gallery" element={<Gallery />} />
+//               <Route path="/login" element={<Login />} />
+//             </Routes>
+//           </div>
+//         </Router>
+//       </Notification>
+//     </ThemeProvider>
+//   );
+// }
 
+// export default App;
 
-
-
-
-
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
-import Navbar from './components/Navbar';
-import Home from './pages/Home';
-import Students from './pages/Students';
-import DiningTokenSystem from './DiningTokenSystem';  // ← FIXED
-import Gallery from './pages/Gallery';
-import Login from './pages/Login';
-import './App.css';
-import Notification from './components/Notification'; // <- added
+import React, { useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { ThemeProvider, createTheme, CssBaseline } from "@mui/material";
+import HallShangsod from './pages/HallShangsod';
+import Teachers from './pages/Teachers';
+import TeacherGroup from './pages/TeacherGroup';
+import Navbar from "./components/Navbar";
+import Home from "./pages/Home";
+import Students from "./pages/Students";
+import DiningTokenSystem from "./pages/DiningTokenSystem";
+import Gallery from "./pages/Gallery";
+import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
+import "./App.css";
+import Notification from "./components/Notification";
+import { AuthProvider } from "./contexts/AuthContext";
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
 
   const theme = createTheme({
     palette: {
-      mode: darkMode ? 'dark' : 'light',
-      primary: { main: darkMode ? '#2e7d32' : '#388e3c' },
-      secondary: { main: '#fdd835' },
-      background: {
-        default: darkMode ? '#121212' : '#f5f5f5',
-        paper: darkMode ? '#1e1e1e' : '#ffffff',
-      },
+      mode: darkMode ? "dark" : "light",
+      primary: { main: darkMode ? "#2e7d32" : "#388e3c" },
     },
   });
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      {/* Wrap app with Notification provider. offsetTop should match navbar height (70px used here). */}
       <Notification offsetTop="70px">
-        <Router>
-          <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
-          <div style={{ paddingTop: '70px' }}>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/students" element={<Students />} />
-              <Route path="/dining" element={<DiningTokenSystem />} />  {/* ← Use correct name */}
-              <Route path="/gallery" element={<Gallery />} />
-              <Route path="/login" element={<Login />} />
-            </Routes>
-          </div>
-        </Router>
+        <AuthProvider>
+          <Router>
+            <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
+            <div style={{ paddingTop: "70px" }}>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/students" element={<Students />} />
+                <Route path="/dining" element={<DiningTokenSystem />} />
+                <Route path="/gallery" element={<Gallery />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/signup" element={<SignupPage />} />
+
+                {/*  */}
+                <Route path="/teachers" element={<Teachers />} />
+                <Route path="/teachers/:group" element={<TeacherGroup />} />
+                <Route path="/hall-shangsod" element={<HallShangsod />} />
+              </Routes>
+            </div>
+          </Router>
+        </AuthProvider>
       </Notification>
     </ThemeProvider>
   );

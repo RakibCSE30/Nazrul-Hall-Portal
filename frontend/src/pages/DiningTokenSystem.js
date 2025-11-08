@@ -1250,287 +1250,445 @@
 
 // 4444
 // src/DiningTokenSystem.js
-import React, { useState, useEffect } from 'react';
-import LoginPage from './pages/LoginPage';
-import SignupPage from './pages/SignupPage';
-import DashboardPage from './pages/DashboardPage';
-import Notification from './components/Notification';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import React, { useState, useEffect } from 'react';
+// import LoginPage from './LoginPage';
+// import SignupPage from './SignupPage';
+// import DashboardPage from './DashboardPage';
+// import Notification from '../components/Notification';
+
+// const DiningTokenSystem = () => {
+//   const [currentPage, setCurrentPage] = useState('login');
+//   const [user, setUser] = useState(null);
+//   const [formData, setFormData] = useState({
+//     email: '',
+//     password: '',
+//     name: '',
+//     studentId: '',
+//     mobile: ''
+//   });
+//   const [showPassword, setShowPassword] = useState(false);
+//   const [tokens, setTokens] = useState([]);
+//   const [tokenCount, setTokenCount] = useState(1);
+//   const [paymentMethod, setPaymentMethod] = useState('');
+//   const [notification, setNotification] = useState(null);
+//   const [isTimeValid, setIsTimeValid] = useState(false);
+
+//   useEffect(() => {
+//     const loadUserData = async () => {
+//       try {
+//         const userData = await window.storage.get('current_user');
+//         if (userData) {
+//           const parsedUser = JSON.parse(userData.value);
+//           setUser(parsedUser);
+//           setCurrentPage('dashboard');
+//           loadTokens(parsedUser.email);
+//         }
+//       } catch (error) {
+//         console.log('No active session');
+//       }
+//     };
+//     loadUserData();
+//     checkTime();
+//     const interval = setInterval(checkTime, 60000);
+//     return () => clearInterval(interval);
+//   }, []);
+
+//   const checkTime = () => {
+//     const now = new Date();
+//     const hours = now.getHours();
+//     setIsTimeValid(hours >= 20 && hours < 22);
+//   };
+
+//   const loadTokens = async (email) => {
+//     try {
+//       const result = await window.storage.get(`tokens_${email}`);
+//       if (result) {
+//         setTokens(JSON.parse(result.value));
+//       }
+//     } catch (error) {
+//       setTokens([]);
+//     }
+//   };
+
+//   const showNotification = (message, type = 'success') => {
+//     setNotification({ message, type });
+//     setTimeout(() => setNotification(null), 3000);
+//   };
+
+//   const validateEmail = (email) => {
+//     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+//   };
+
+//   const validatePassword = (password) => {
+//     const minLength = password.length >= 8;
+//     const hasUpper = /[A-Z]/.test(password);
+//     const hasLower = /[a-z]/.test(password);
+//     const hasNumber = /[0-9]/.test(password);
+//     const hasSpecial = /[!@#$%^&*]/.test(password);
+//     return minLength && hasUpper && hasLower && hasNumber && hasSpecial;
+//   };
+
+//   const handleSignup = async () => {
+//     if (!formData.name.trim()) {
+//       showNotification('Please provide your full name', 'error');
+//       return;
+//     }
+//     if (!formData.studentId.trim()) {
+//       showNotification('Please provide your student ID', 'error');
+//       return;
+//     }
+//     if (!formData.mobile.trim() || !/^\d{10,}$/.test(formData.mobile)) {
+//       showNotification('Please provide a valid mobile number (10+ digits)', 'error');
+//       return;
+//     }
+//     if (!formData.email || !validateEmail(formData.email)) {
+//       showNotification('Please provide a valid email address', 'error');
+//       return;
+//     }
+//     if (!formData.password || !validatePassword(formData.password)) {
+//       showNotification(
+//         'Password must be 8+ characters with uppercase, lowercase, number, and special character',
+//         'error'
+//       );
+//       return;
+//     }
+
+//     try {
+//       const existingUser = await window.storage.get(`user_${formData.email}`);
+//       if (existingUser) {
+//         showNotification('Email already registered', 'error');
+//         return;
+//       }
+
+//       const userData = {
+//         email: formData.email,
+//         name: formData.name,
+//         studentId: formData.studentId,
+//         mobile: formData.mobile,
+//         password: formData.password
+//       };
+
+//       await window.storage.set(`user_${formData.email}`, JSON.stringify(userData));
+//       showNotification('Registration successful! Please login.', 'success');
+//       setCurrentPage('login');
+//       setFormData({ email: '', password: '', name: '', studentId: '', mobile: '' });
+//     } catch (error) {
+//       showNotification('Registration failed. Please try again.', 'error');
+//     }
+//   };
+
+//   const handleLogin = async () => {
+//     if (!formData.email || !validateEmail(formData.email)) {
+//       showNotification('Please provide a valid email address', 'error');
+//       return;
+//     }
+
+//     try {
+//       const result = await window.storage.get(`user_${formData.email}`);
+//       if (!result) {
+//         showNotification('Email not registered', 'error');
+//         return;
+//       }
+
+//       const userData = JSON.parse(result.value);
+//       if (!formData.password) {
+//         showNotification('Please provide a password', 'error');
+//         return;
+//       }
+//       if (userData.password !== formData.password) {
+//         showNotification('Incorrect password', 'error');
+//         return;
+//       }
+
+//       setUser(userData);
+//       await window.storage.set('current_user', JSON.stringify(userData));
+//       loadTokens(userData.email);
+//       setCurrentPage('dashboard');
+//       showNotification(`Welcome back, ${userData.name}!`, 'success');
+//       setFormData({ email: '', password: '', name: '', studentId: '', mobile: '' });
+//     } catch (error) {
+//       showNotification('Login failed. Please try again.', 'error');
+//     }
+//   };
+
+//   const handleLogout = async () => {
+//     try {
+//       await window.storage.delete('current_user');
+//       setUser(null);
+//       setTokens([]);
+//       setCurrentPage('login');
+//       showNotification('Logged out successfully', 'success');
+//     } catch (error) {
+//       showNotification('Logout failed', 'error');
+//     }
+//   };
+
+//   const handleCollectToken = async () => {
+//     if (!isTimeValid) {
+//       showNotification('Tokens can only be collected between 8 PM and 10 PM', 'error');
+//       return;
+//     }
+
+//     if (!paymentMethod) {
+//       showNotification('Please select a payment method', 'error');
+//       return;
+//     }
+
+//     const newTokens = [];
+//     const now = new Date();
+//     const baseId = Date.now();
+
+//     for (let i = 0; i < tokenCount; i++) {
+//       newTokens.push({
+//         id: `${baseId}_${i}`,
+//         date: now.toLocaleDateString(),
+//         time: now.toLocaleTimeString(),
+//         paymentMethod: paymentMethod,
+//         status: 'active',
+//         amount: 50
+//       });
+//     }
+
+//     const updatedTokens = [...tokens, ...newTokens];
+//     setTokens(updatedTokens);
+
+//     try {
+//       await window.storage.set(`tokens_${user.email}`, JSON.stringify(updatedTokens));
+//       showNotification(`Successfully collected ${tokenCount} token(s) via ${paymentMethod.toUpperCase()}`, 'success');
+//       setTokenCount(1);
+//       setPaymentMethod('');
+//     } catch (error) {
+//       showNotification('Failed to save tokens', 'error');
+//     }
+//   };
+
+//   const handleCancelToken = async (tokenId) => {
+//     const updatedTokens = tokens.map(token =>
+//       token.id === tokenId ? { ...token, status: 'cancelled' } : token
+//     );
+//     setTokens(updatedTokens);
+
+//     try {
+//       await window.storage.set(`tokens_${user.email}`, JSON.stringify(updatedTokens));
+//       showNotification('Token cancelled successfully', 'success');
+//     } catch (error) {
+//       showNotification('Failed to cancel token', 'error');
+//     }
+//   };
+
+//   const handleKeyPress = (e, action) => {
+//     if (e.key === 'Enter') {
+//       action();
+//     }
+//   };
+
+//   return (
+//     <div className="relative">
+//       {notification && (
+//         <Notification
+//           message={notification.message}
+//           type={notification.type}
+//         />
+//       )}
+//       {currentPage === 'login' && (
+//         <LoginPage
+//           formData={formData}
+//           setFormData={setFormData}
+//           showPassword={showPassword}
+//           setShowPassword={setShowPassword}
+//           handleLogin={handleLogin}
+//           handleKeyPress={handleKeyPress}
+//           setCurrentPage={setCurrentPage}
+//         />
+//       )}
+//       {currentPage === 'signup' && (
+//         <SignupPage
+//           formData={formData}
+//           setFormData={setFormData}
+//           showPassword={showPassword}
+//           setShowPassword={setShowPassword}
+//           handleSignup={handleSignup}
+//           setCurrentPage={setCurrentPage}
+//         />
+//       )}
+//       {currentPage === 'dashboard' && user && (
+//         <DashboardPage
+//           user={user}
+//           tokens={tokens}
+//           tokenCount={tokenCount}
+//           setTokenCount={setTokenCount}
+//           paymentMethod={paymentMethod}
+//           setPaymentMethod={setPaymentMethod}
+//           isTimeValid={isTimeValid}
+//           handleCollectToken={handleCollectToken}
+//           handleCancelToken={handleCancelToken}
+//           handleLogout={handleLogout}
+//         />
+//       )}
+//     </div>
+//   );
+// };
+
+// export default DiningTokenSystem;
+
+
+
+
+
+
+
+
+import React, { useContext, useEffect, useState } from 'react';
+import { Container, Typography, Box, FormControl, InputLabel, Select, MenuItem, Button, Dialog, DialogTitle, DialogContent, List, ListItem, ListItemText } from '@mui/material';
+import API from '../services/api';
+import { AuthContext } from '../contexts/AuthContext';
+import { useNotification } from '../components/Notification';
+
+const TOKEN_PRICE = 50;
 
 const DiningTokenSystem = () => {
-  const [currentPage, setCurrentPage] = useState('login');
-  const [user, setUser] = useState(null);
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    name: '',
-    studentId: '',
-    mobile: ''
-  });
-  const [showPassword, setShowPassword] = useState(false);
-  const [tokens, setTokens] = useState([]);
-  const [tokenCount, setTokenCount] = useState(1);
+  const { user } = useContext(AuthContext);
+  const { addNotification } = useNotification();
+
+  const [meal, setMeal] = useState('rat');
+  const [count, setCount] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState('');
-  const [notification, setNotification] = useState(null);
-  const [isTimeValid, setIsTimeValid] = useState(false);
+  const [payOpen, setPayOpen] = useState(false);
+  const [tokens, setTokens] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const loadUserData = async () => {
-      try {
-        const userData = await window.storage.get('current_user');
-        if (userData) {
-          const parsedUser = JSON.parse(userData.value);
-          setUser(parsedUser);
-          setCurrentPage('dashboard');
-          loadTokens(parsedUser.email);
-        }
-      } catch (error) {
-        console.log('No active session');
-      }
-    };
-    loadUserData();
-    checkTime();
-    const interval = setInterval(checkTime, 60000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const checkTime = () => {
-    const now = new Date();
-    const hours = now.getHours();
-    setIsTimeValid(hours >= 20 && hours < 22);
-  };
-
-  const loadTokens = async (email) => {
+  const fetchTokens = async () => {
+    if (!user) return;
     try {
-      const result = await window.storage.get(`tokens_${email}`);
-      if (result) {
-        setTokens(JSON.parse(result.value));
-      }
-    } catch (error) {
-      setTokens([]);
+      const res = await API.get('/tokens/my'); // we'll implement server endpoint later; if not exist, fetch /tokens?userId=
+      // fallback: server might not have this route; for now skip if 404
+      setTokens(res.data.tokens || []);
+    } catch (err) {
+      // ignore
     }
   };
 
-  const showNotification = (message, type = 'success') => {
-    setNotification({ message, type });
-    setTimeout(() => setNotification(null), 3000);
+  useEffect(() => { fetchTokens(); }, [user]);
+
+  const openPay = () => {
+    if (!user) return addNotification({ message: 'Please login first', type: 'error' });
+    if (!paymentMethod) return addNotification({ message: 'Select payment method', type: 'error' });
+    setPayOpen(true);
   };
 
-  const validateEmail = (email) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  };
-
-  const validatePassword = (password) => {
-    const minLength = password.length >= 8;
-    const hasUpper = /[A-Z]/.test(password);
-    const hasLower = /[a-z]/.test(password);
-    const hasNumber = /[0-9]/.test(password);
-    const hasSpecial = /[!@#$%^&*]/.test(password);
-    return minLength && hasUpper && hasLower && hasNumber && hasSpecial;
-  };
-
-  const handleSignup = async () => {
-    if (!formData.name.trim()) {
-      showNotification('Please provide your full name', 'error');
-      return;
-    }
-    if (!formData.studentId.trim()) {
-      showNotification('Please provide your student ID', 'error');
-      return;
-    }
-    if (!formData.mobile.trim() || !/^\d{10,}$/.test(formData.mobile)) {
-      showNotification('Please provide a valid mobile number (10+ digits)', 'error');
-      return;
-    }
-    if (!formData.email || !validateEmail(formData.email)) {
-      showNotification('Please provide a valid email address', 'error');
-      return;
-    }
-    if (!formData.password || !validatePassword(formData.password)) {
-      showNotification(
-        'Password must be 8+ characters with uppercase, lowercase, number, and special character',
-        'error'
-      );
-      return;
-    }
-
+  const handleSimulate = async () => {
     try {
-      const existingUser = await window.storage.get(`user_${formData.email}`);
-      if (existingUser) {
-        showNotification('Email already registered', 'error');
+      const amount = TOKEN_PRICE * count;
+      const res = await API.post('/pay/simulate', { userId: user.id, amount, method: paymentMethod });
+      if (!res.data.success) {
+        addNotification({ message: 'Payment failed', type: 'error' });
+        setPayOpen(false);
         return;
       }
-
-      const userData = {
-        email: formData.email,
-        name: formData.name,
-        studentId: formData.studentId,
-        mobile: formData.mobile,
-        password: formData.password
-      };
-
-      await window.storage.set(`user_${formData.email}`, JSON.stringify(userData));
-      showNotification('Registration successful! Please login.', 'success');
-      setCurrentPage('login');
-      setFormData({ email: '', password: '', name: '', studentId: '', mobile: '' });
-    } catch (error) {
-      showNotification('Registration failed. Please try again.', 'error');
-    }
-  };
-
-  const handleLogin = async () => {
-    if (!formData.email || !validateEmail(formData.email)) {
-      showNotification('Please provide a valid email address', 'error');
-      return;
-    }
-
-    try {
-      const result = await window.storage.get(`user_${formData.email}`);
-      if (!result) {
-        showNotification('Email not registered', 'error');
-        return;
-      }
-
-      const userData = JSON.parse(result.value);
-      if (!formData.password) {
-        showNotification('Please provide a password', 'error');
-        return;
-      }
-      if (userData.password !== formData.password) {
-        showNotification('Incorrect password', 'error');
-        return;
-      }
-
-      setUser(userData);
-      await window.storage.set('current_user', JSON.stringify(userData));
-      loadTokens(userData.email);
-      setCurrentPage('dashboard');
-      showNotification(`Welcome back, ${userData.name}!`, 'success');
-      setFormData({ email: '', password: '', name: '', studentId: '', mobile: '' });
-    } catch (error) {
-      showNotification('Login failed. Please try again.', 'error');
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      await window.storage.delete('current_user');
-      setUser(null);
-      setTokens([]);
-      setCurrentPage('login');
-      showNotification('Logged out successfully', 'success');
-    } catch (error) {
-      showNotification('Logout failed', 'error');
-    }
-  };
-
-  const handleCollectToken = async () => {
-    if (!isTimeValid) {
-      showNotification('Tokens can only be collected between 8 PM and 10 PM', 'error');
-      return;
-    }
-
-    if (!paymentMethod) {
-      showNotification('Please select a payment method', 'error');
-      return;
-    }
-
-    const newTokens = [];
-    const now = new Date();
-    const baseId = Date.now();
-
-    for (let i = 0; i < tokenCount; i++) {
-      newTokens.push({
-        id: `${baseId}_${i}`,
-        date: now.toLocaleDateString(),
-        time: now.toLocaleTimeString(),
-        paymentMethod: paymentMethod,
-        status: 'active',
-        amount: 50
+      // create token record(s) — here we create one token per click (if you want multiple create loop)
+      const createRes = await API.post('/tokens/create', {
+        userId: user.id,
+        meal,
+        amount,
+        paymentMethod,
+        paymentRef: res.data.txId,
       });
-    }
-
-    const updatedTokens = [...tokens, ...newTokens];
-    setTokens(updatedTokens);
-
-    try {
-      await window.storage.set(`tokens_${user.email}`, JSON.stringify(updatedTokens));
-      showNotification(`Successfully collected ${tokenCount} token(s) via ${paymentMethod.toUpperCase()}`, 'success');
-      setTokenCount(1);
-      setPaymentMethod('');
-    } catch (error) {
-      showNotification('Failed to save tokens', 'error');
+      addNotification({ message: 'Token collected', type: 'success' });
+      fetchTokens();
+      setPayOpen(false);
+    } catch (err) {
+      addNotification({ message: 'Server error', type: 'error' });
+      setPayOpen(false);
     }
   };
 
-  const handleCancelToken = async (tokenId) => {
-    const updatedTokens = tokens.map(token =>
-      token.id === tokenId ? { ...token, status: 'cancelled' } : token
-    );
-    setTokens(updatedTokens);
-
+  const handleCancel = async (id) => {
     try {
-      await window.storage.set(`tokens_${user.email}`, JSON.stringify(updatedTokens));
-      showNotification('Token cancelled successfully', 'success');
-    } catch (error) {
-      showNotification('Failed to cancel token', 'error');
-    }
-  };
-
-  const handleKeyPress = (e, action) => {
-    if (e.key === 'Enter') {
-      action();
+      const res = await API.post(`/tokens/cancel/${id}`);
+      addNotification({ message: res.data.message || 'Cancelled', type: 'success' });
+      fetchTokens();
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Cannot cancel';
+      addNotification({ message: msg, type: 'error' });
     }
   };
 
   return (
-    <div className="relative">
-      {notification && (
-        <Notification
-          message={notification.message}
-          type={notification.type}
-        />
-      )}
-      {currentPage === 'login' && (
-        <LoginPage
-          formData={formData}
-          setFormData={setFormData}
-          showPassword={showPassword}
-          setShowPassword={setShowPassword}
-          handleLogin={handleLogin}
-          handleKeyPress={handleKeyPress}
-          setCurrentPage={setCurrentPage}
-        />
-      )}
-      {currentPage === 'signup' && (
-        <SignupPage
-          formData={formData}
-          setFormData={setFormData}
-          showPassword={showPassword}
-          setShowPassword={setShowPassword}
-          handleSignup={handleSignup}
-          setCurrentPage={setCurrentPage}
-        />
-      )}
-      {currentPage === 'dashboard' && user && (
-        <DashboardPage
-          user={user}
-          tokens={tokens}
-          tokenCount={tokenCount}
-          setTokenCount={setTokenCount}
-          paymentMethod={paymentMethod}
-          setPaymentMethod={setPaymentMethod}
-          isTimeValid={isTimeValid}
-          handleCollectToken={handleCollectToken}
-          handleCancelToken={handleCancelToken}
-          handleLogout={handleLogout}
-        />
-      )}
-    </div>
+    <Container style={{ marginTop: 90 }}>
+      <Typography variant="h4" gutterBottom>Token Collection</Typography>
+
+      <Box display="flex" gap={2} alignItems="center" mb={2}>
+        <FormControl sx={{ minWidth: 150 }}>
+          <InputLabel>Meal</InputLabel>
+          <Select value={meal} label="Meal" onChange={(e) => setMeal(e.target.value)}>
+            <MenuItem value="dupur">Dupur</MenuItem>
+            <MenuItem value="rat">Rat</MenuItem>
+          </Select>
+        </FormControl>
+
+        <FormControl sx={{ minWidth: 120 }}>
+          <InputLabel>No</InputLabel>
+          <Select value={count} label="No" onChange={(e) => setCount(e.target.value)}>
+            {[1,2,3,4,5].map(n => <MenuItem key={n} value={n}>{n}</MenuItem>)}
+          </Select>
+        </FormControl>
+
+        <FormControl sx={{ minWidth: 150 }}>
+          <InputLabel>Payment</InputLabel>
+          <Select value={paymentMethod} label="Payment" onChange={(e) => setPaymentMethod(e.target.value)}>
+            <MenuItem value="bkash">bKash</MenuItem>
+            <MenuItem value="nagad">Nagad</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
+
+      <Box mb={2}>
+        <div>Price per token: ৳{TOKEN_PRICE}</div>
+        <div>Total: ৳{TOKEN_PRICE * count}</div>
+      </Box>
+
+      <Button variant="contained" onClick={openPay}>Proceed to Pay</Button>
+
+      <Dialog open={payOpen} onClose={() => setPayOpen(false)}>
+        <DialogTitle>Confirm Payment</DialogTitle>
+        <DialogContent>
+          <p>Pay ৳{TOKEN_PRICE * count} via {paymentMethod}</p>
+          <Button variant="contained" onClick={handleSimulate}>Simulate Payment</Button>
+        </DialogContent>
+      </Dialog>
+
+      <Box mt={4}>
+        <Typography variant="h6">My Tokens</Typography>
+        <List>
+          {tokens.length === 0 && <Typography color="textSecondary">No tokens yet</Typography>}
+          {tokens.map(t => (
+            <ListItem key={t._id} secondaryAction={
+              t.status === 'active' ? <Button color="error" onClick={() => handleCancel(t._id)}>Cancel</Button> : null
+            }>
+              <ListItemText primary={`${t.meal} • ৳${t.amount} • ${t.status}`} secondary={`${t.date} ${t.time}`} />
+            </ListItem>
+          ))}
+        </List>
+      </Box>
+    </Container>
   );
 };
 
 export default DiningTokenSystem;
-
 
 
 

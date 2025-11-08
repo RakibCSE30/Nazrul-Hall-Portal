@@ -1,30 +1,78 @@
-import React, { useState } from 'react';
-import { Container, Box, Typography, Grid, Card, CardContent, Avatar, IconButton, useMediaQuery, Drawer, AppBar, Toolbar, Button } from '@mui/material';
+import React, { useState, useEffect, useMemo } from 'react';
+import {
+  Container,
+  Grid,
+  Card,
+  CardContent,
+  Avatar,
+  Typography,
+  Box,
+  Drawer,
+  IconButton,
+  AppBar,
+  Toolbar,
+  Button,
+  Paper
+} from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useNavigate, useParams } from 'react-router-dom';
 import HALL_SHANGSOD from '../data/hallShangsod';
 import HallSidebar from '../components/HallSidebar';
+import HallMemberCard from '../components/HallMemberCard';
 
+/**
+ * Improved HallShangsod:
+ * - LEFT permanent sidebar on desktop, LEFT drawer on mobile
+ * - Clicking sidebar navigates to /hall-shangsod/:id and shows a big hero card for selected member
+ * - Other members shown below as uniform cards (selected member excluded)
+ */
 const HallShangsod = () => {
-  const members = HALL_SHANGSOD;
-  const [selected, setSelected] = useState(members[0]);
-  const isMdUp = useMediaQuery((theme) => theme.breakpoints.up('md'));
+  const theme = useTheme();
+  const mdUp = useMediaQuery(theme.breakpoints.up('md'));
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const navigate = useNavigate();
+  const { id: routeId } = useParams();
 
-  const handleSelect = (m) => {
-    setSelected(m);
-    if (!isMdUp) setDrawerOpen(false);
+  // stable members list
+  const members = useMemo(() => [...HALL_SHANGSOD], []);
+
+  // selected member from route or default first
+  const [selected, setSelected] = useState(() => {
+    if (routeId) return HALL_SHANGSOD.find((m) => m.id === routeId) || HALL_SHANGSOD[0] || null;
+    return HALL_SHANGSOD[0] || null;
+  });
+
+  // keep selected in sync with route param
+  useEffect(() => {
+    if (routeId) {
+      const match = members.find((m) => m.id === routeId);
+      if (match) setSelected(match);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [routeId]);
+
+  const handleSelect = (member) => {
+    setSelected(member);
+    navigate(`/hall-shangsod/${member.id}`, { replace: false });
+    if (!mdUp) setDrawerOpen(false); // close drawer on mobile
   };
 
+  // other members excluding selected
+  const otherMembers = members.filter((m) => m.id !== selected?.id);
+
   return (
-    <Box>
-      {/* Small screen top appbar to show sidebar toggle */}
-      {!isMdUp && (
+    <>
+      {!mdUp && (
         <AppBar position="static" color="transparent" elevation={0}>
           <Toolbar sx={{ px: 2 }}>
             <IconButton edge="start" color="inherit" onClick={() => setDrawerOpen(true)} aria-label="menu">
               <MenuIcon />
             </IconButton>
-            <Typography variant="h6" sx={{ ml: 1 }}>Hall Shangsod</Typography>
+            <Typography variant="h6" sx={{ ml: 1 }}>
+              Hall Shangsod
+            </Typography>
             <Box sx={{ flexGrow: 1 }} />
             <Button href="/dining" variant="outlined" size="small">Token</Button>
           </Toolbar>
@@ -33,59 +81,75 @@ const HallShangsod = () => {
 
       <Container maxWidth="lg" sx={{ mt: { xs: 2, md: 4 }, mb: 6 }}>
         <Grid container spacing={3}>
-          {/* Main content */}
-          <Grid item xs={12} md={8}>
-            <Card>
-              <CardContent>
-                <Box display="flex" gap={2} alignItems="center">
-                  <Avatar src={selected.photo} sx={{ width: 96, height: 96 }} />
-                  <Box>
-                    <Typography variant="h5">{selected.name}</Typography>
-                    <Typography variant="subtitle1" color="text.secondary">{selected.role}</Typography>
-                    <Typography variant="body2" sx={{ mt: 1 }}>{selected.bio}</Typography>
-                    <Typography variant="body2" sx={{ mt: 1, color: 'text.secondary' }}>
-                      Phone: {selected.phone} • Email: {selected.email}
-                    </Typography>
-                  </Box>
-                </Box>
-              </CardContent>
-            </Card>
-
-            <Box sx={{ mt: 3 }}>
-              <Typography variant="h6" gutterBottom>All Members</Typography>
-              <Grid container spacing={2}>
-                {members.map(m => (
-                  <Grid item xs={12} sm={6} key={m.id}>
-                    <Card onClick={() => handleSelect(m)} sx={{ cursor: 'pointer' }}>
-                      <CardContent sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                        <Avatar src={m.photo} />
-                        <Box>
-                          <Typography fontWeight="bold">{m.name}</Typography>
-                          <Typography variant="body2" color="text.secondary">{m.role}</Typography>
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                ))}
-              </Grid>
-            </Box>
-          </Grid>
-
-          {/* Right-side sidebar (permanent on md+, Drawer for xs/sm) */}
-          <Grid item xs={12} md={4}>
-            {isMdUp ? (
+          {/* Left sidebar on md+, Drawer left on mobile */}
+          <Grid item xs={12} md={4} order={{ xs: 2, md: 1 }}>
+            {mdUp ? (
               <Box sx={{ position: 'sticky', top: 96 }}>
-                <HallSidebar members={members} selectedId={selected.id} onSelect={handleSelect} />
+                <HallSidebar members={members} selectedId={selected?.id} onSelect={handleSelect} />
               </Box>
             ) : (
-              <Drawer anchor="right" open={drawerOpen} onClose={() => setDrawerOpen(false)}>
-                <HallSidebar members={members} selectedId={selected.id} onSelect={handleSelect} />
+              <Drawer anchor="left" open={drawerOpen} onClose={() => setDrawerOpen(false)}>
+                <Box sx={{ width: 300 }}>
+                  <HallSidebar members={members} selectedId={selected?.id} onSelect={handleSelect} />
+                </Box>
               </Drawer>
             )}
           </Grid>
+
+          {/* Main content area */}
+          <Grid item xs={12} md={8} order={{ xs: 1, md: 2 }}>
+            {selected ? (
+              <Paper elevation={3} sx={{ mb: 3, p: { xs: 2, sm: 3 } }}>
+                <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} gap={2} alignItems="flex-start">
+                  <Avatar
+                    src={selected.photo}
+                    alt={selected.name}
+                    sx={{
+                      width: { xs: 160, sm: 260 },
+                      height: { xs: 160, sm: 260 },
+                      borderRadius: 2,
+                      flexShrink: 0
+                    }}
+                  />
+                  <Box>
+                    <Typography variant="h4">{selected.name}</Typography>
+                    <Typography variant="h6" color="text.secondary" gutterBottom>{selected.role}</Typography>
+
+                    <Box mt={1}>
+                      <Typography variant="body1"><strong>Designation:</strong> {selected.position || selected.role}</Typography>
+                      <Typography variant="body1"><strong>Phone:</strong> {selected.phone}</Typography>
+                      <Typography variant="body1"><strong>Email:</strong> {selected.email}</Typography>
+                      <Typography variant="body1"><strong>Blood Group:</strong> {selected.blood}</Typography>
+                      <Typography variant="body1" mt={1}><strong>Responsibilities:</strong> {selected.responsibilities || selected.info || '—'}</Typography>
+                      <Typography variant="body1" mt={1}><strong>Office Hours:</strong> {selected.officeHours || 'As posted'}</Typography>
+                    </Box>
+
+                    <Box mt={2}>
+                      <Typography variant="body2" color="text.secondary">
+                        {selected.bio || selected.info}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Box>
+              </Paper>
+            ) : (
+              <Typography>No member selected</Typography>
+            )}
+
+            <Typography variant="h6" gutterBottom>Other Members</Typography>
+
+            <Grid container spacing={2}>
+              {otherMembers.map((m) => (
+                <Grid item xs={12} sm={6} md={6} key={m.id} sx={{ display: 'flex' }}>
+                  {/* Grid child will stretch because HallMemberCard uses height:100% */}
+                  <HallMemberCard member={m} onClick={handleSelect} />
+                </Grid>
+              ))}
+            </Grid>
+          </Grid>
         </Grid>
       </Container>
-    </Box>
+    </>
   );
 };
 

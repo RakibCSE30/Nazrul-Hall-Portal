@@ -185,19 +185,30 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ThemeProvider, createTheme, CssBaseline } from "@mui/material";
-import HallShangsod from './pages/HallShangsod';
-import Teachers from './pages/Teachers';
-import TeacherGroup from './pages/TeacherGroup';
+
 import Navbar from "./components/Navbar";
+import Notification from "./components/Notification";
+import { AuthProvider } from "./contexts/AuthContext";
+import Footer from "./components/Footer";
+
 import Home from "./pages/Home";
 import Students from "./pages/Students";
 import DiningTokenSystem from "./pages/DiningTokenSystem";
 import Gallery from "./pages/Gallery";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
+
+import Teachers from "./pages/Teachers";
+import TeacherGroup from "./pages/TeacherGroup";
+
+import HallShangsod from "./pages/HallShangsod";
+import HallMemberDetail from "./pages/HallMemberDetail";
+
+import Staffs from "./pages/Staffs";
+import StaffGroup from "./pages/StaffGroup";
+import StaffMemberDetail from "./pages/StaffMemberDetail";
+
 import "./App.css";
-import Notification from "./components/Notification";
-import { AuthProvider } from "./contexts/AuthContext";
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
@@ -206,6 +217,11 @@ function App() {
     palette: {
       mode: darkMode ? "dark" : "light",
       primary: { main: darkMode ? "#2e7d32" : "#388e3c" },
+      secondary: { main: "#fdd835" },
+      background: {
+        default: darkMode ? "#121212" : "#f5f5f5",
+        paper: darkMode ? "#1e1e1e" : "#ffffff",
+      },
     },
   });
 
@@ -216,7 +232,9 @@ function App() {
         <AuthProvider>
           <Router>
             <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
-            <div style={{ paddingTop: "70px" }}>
+
+            {/* Main content area; paddingTop should match Navbar height */}
+            <div style={{ paddingTop: "70px", minHeight: "calc(100vh - 200px)" }}>
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/students" element={<Students />} />
@@ -225,12 +243,25 @@ function App() {
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signup" element={<SignupPage />} />
 
-                {/*  */}
+                {/* Teachers */}
                 <Route path="/teachers" element={<Teachers />} />
                 <Route path="/teachers/:group" element={<TeacherGroup />} />
+
+                {/* Hall Shangsod */}
                 <Route path="/hall-shangsod" element={<HallShangsod />} />
+                <Route path="/hall-shangsod/:id" element={<HallMemberDetail />} />
+
+                {/* Staffs */}
+                <Route path="/staffs" element={<Staffs />} />
+                <Route path="/staffs/:groupKey" element={<StaffGroup />} />
+                <Route path="/staffs/member/:id" element={<StaffMemberDetail />} />
+
+                {/* Add more routes here as you implement them */}
               </Routes>
             </div>
+
+            {/* Footer shown on every page (below main content) */}
+            <Footer />
           </Router>
         </AuthProvider>
       </Notification>
